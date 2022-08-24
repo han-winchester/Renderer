@@ -13,32 +13,36 @@ void Model::Draw(Shader& shader)
     }
 }
 
-void Model::loadModel(const std::string path)
+void Model::loadModel(std::string const& path)
 {
+    // read file via ASSIMP
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    // check for errors
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
-        std::cout << "Error::ASSIMP::" << importer.GetErrorString() << std::endl;
+        std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
         return;
     }
-
+    // retrieve the directory path of the filepath
     directory = path.substr(0, path.find_last_of('/'));
 
+    // process ASSIMP's root node recursively
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene)
 {
-    // process all the nodes meshes
-    for (unsigned int i = 0; i < node->mNumMeshes;i++)
+    // process each mesh located at the current node
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
+        // the node object only contains indices to index the actual objects in the scene. 
+        // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
     }
-    //then do the same for each of its children
-    for (unsigned int i = 0; i < node->mNumChildren;i++)
+    // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         processNode(node->mChildren[i], scene);
     }
@@ -160,6 +164,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
     }
     return textures;
 }
+
 
 unsigned int TextureFromFile(const char* path, const std::string& directory)
 {

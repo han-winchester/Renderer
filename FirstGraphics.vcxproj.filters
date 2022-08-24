@@ -77,5 +77,11 @@
     <None Include="LightShader.frag">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="ModelShader.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="ModelShader.vert">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

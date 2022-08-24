@@ -82,6 +82,7 @@ int main()
     // ------------------------------------
     Shader ourShader("CubeShader.vert", "CubeShader.frag");
     Shader lightShader("LightShader.vert", "LightShader.frag");
+    Shader modelShader("ModelShader.vert", "ModelShader.frag");
 
     // load models
 // -----------
@@ -244,20 +245,26 @@ int main()
         glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f)); // Rotates the front most cube in the scene
 
+        // render model
+        //--------------
+        // activate model shader
+        modelShader.use();
+        modelShader.setMat4("projection", projection);
+        modelShader.setMat4("view", view);
+
+        // render the loaded model
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        modelShader.setMat4("model", model);
+        ourModel.Draw(modelShader);
+
 
 
          // render boxes
         //----------------------
         // activate boxes shader
         ourShader.use();
-
-        // render the loaded model
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
-
 
         ourShader.setVec3("viewPos", camera.Position);
         ourShader.setFloat("material.shininess", 32.0f);
