@@ -63,6 +63,7 @@ uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform float time;
 uniform bool isBlackLight;
+uniform bool spotLightEnabled;
 
 vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -82,8 +83,9 @@ void main()
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);   
         
-    // phase 3: Spot light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
+    if(spotLightEnabled)
+        // phase 3: Spot light
+        result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
 
     // apply emission map
    // result += ApplyEmission();
