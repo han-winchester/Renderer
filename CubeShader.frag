@@ -64,6 +64,7 @@ uniform vec3 viewPos;
 uniform float time;
 uniform bool isBlackLight;
 uniform bool spotLightEnabled;
+uniform bool directionalLightEnabled;
 
 vec3 CalculateDirectionalLight(DirectionalLight dirLight, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -75,9 +76,10 @@ void main()
     // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-
+    vec3 result = vec3(0.0);
     // phase 1: Directional lighting
-    vec3 result = CalculateDirectionalLight(dirLight, norm, viewDir);
+    if(directionalLightEnabled)
+        result += CalculateDirectionalLight(dirLight, norm, viewDir);
 
     // phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)

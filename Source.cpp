@@ -10,12 +10,14 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "SpotLight.h"
+#include "DirectionalLight.h"
+
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-void UpdateFlashLight(SpotLight flashLight, GLFWwindow* window);
+void UpdateLights(SpotLight flashLight, DirectionalLight directionalLight, GLFWwindow* window);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
@@ -38,6 +40,7 @@ float lastFrame = 0.0f; // time of last frame
 
 bool isBlackLight = false;
 bool enableFlashLight = true;
+bool enableDirectionalLight = true;
 
 
 int main()
@@ -218,6 +221,15 @@ int main()
         cubeShader
     );
 
+    DirectionalLight directionalLight(
+       glm::vec3(-0.2f, -1.0f, -0.3f),
+       glm::vec3(0, 0, 0),
+       glm::vec3(0.05f, 0.05f, 0.05f),
+       glm::vec3(0.2f, 0.2f, 0.2f),
+       cubeShader
+    );
+
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -292,14 +304,19 @@ int main()
         cubeShader.setBool("isBlackLight", isBlackLight);
 
         // directional light
+        /*
         cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
         cubeShader.setVec3("dirLight.ambient", 0, 0, 0);
         cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
         cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
+        */
+
 
         int i = 0;
         for(const auto &pointLightPosition: pointLightPositions)
         {
+            
+            
             std::string pointLightIndex = "pointLights[" + std::to_string(i) + "].";
             cubeShader.setVec3(pointLightIndex + "position", pointLightPosition);
             cubeShader.setVec3(pointLightIndex + "ambient", 0.05f, 0.05f, 0.05f);
@@ -312,7 +329,7 @@ int main()
         }
 
 
-        UpdateFlashLight(flashLight, window);
+        UpdateLights(flashLight, directionalLight, window);
 
        
         cubeShader.setMat4("projection", projection);
@@ -382,7 +399,7 @@ int main()
     return 0;
 }
 
-void UpdateFlashLight(SpotLight flashLight, GLFWwindow* window)
+void UpdateLights(SpotLight flashLight, DirectionalLight directionalLight, GLFWwindow* window)
 {
     // Make SpotLight like a flashlight; Always in front of player
     flashLight.SetPosition(camera.Position);
@@ -396,7 +413,11 @@ void UpdateFlashLight(SpotLight flashLight, GLFWwindow* window)
     }
     if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
         isBlackLight = !isBlackLight;
-    
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        enableDirectionalLight = !enableDirectionalLight;
+        directionalLight.EnableDirectionalLight(enableDirectionalLight);
+    }
         
 }
 

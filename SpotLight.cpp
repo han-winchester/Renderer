@@ -11,7 +11,8 @@ SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 ambient,
 	m_Quadratic(quadratic),
 	m_CutOff(cutOff),
 	m_OuterCutOff(outerCutOff),
-	m_Shader(shader)
+	m_Shader(shader),
+	m_EnableSpotLight(true)
 {
 	    m_Shader.setVec3("spotLight.position", m_Position);
         m_Shader.setVec3("spotLight.direction", m_Direction);
@@ -89,6 +90,7 @@ void SpotLight::SetOuterCutOff(float outerCutOff)
 void SpotLight::SetShader(const Shader& shader)
 {
 	m_Shader = shader;
+	// TODO: Need to call all the setters above again?
 }
 
 void SpotLight::EnableSpotLight(bool enableSpotLight)
