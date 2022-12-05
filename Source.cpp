@@ -11,8 +11,9 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "SpotLight.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 
-
+// TODO: Directional Light enabled not working; Currently commented out in the cube shader
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -221,13 +222,20 @@ int main()
         cubeShader
     );
 
-    DirectionalLight directionalLight(
+    DirectionalLight directionalLight
+    (
        glm::vec3(-0.2f, -1.0f, -0.3f),
-       glm::vec3(0, 0, 0),
-       glm::vec3(0.05f, 0.05f, 0.05f),
+       glm::vec3(0.0f, 0.0f, 0.0f),
+       glm::vec3(0.05f, 0.05f, 0.05),
        glm::vec3(0.2f, 0.2f, 0.2f),
        cubeShader
     );
+
+    // Create PointLights
+    PointLight p1(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p2(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p3(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p4(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 
 
     // render loop
@@ -247,7 +255,7 @@ int main()
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        //glClearColor(0, 0, 0, 1.0f);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // light properties
@@ -259,13 +267,6 @@ int main()
         glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
-        // point lights
-        glm::vec3 pointLightPositions[] = {
-            glm::vec3(0.7f + sin(glfwGetTime()) * 2.0f,  0.2f + sin(glfwGetTime() / 2.0f) * 1.0f,  2.0f),
-            glm::vec3(2.3f + sin(glfwGetTime()) * 2.0f, -3.3f + sin(glfwGetTime() / 2.0f) * 1.0f, -4.0f),
-            glm::vec3(-4.0f + sin(glfwGetTime()) * 2.0f,  2.0f + sin(glfwGetTime() / 2.0f) * 1.0f, -12.0f),
-            glm::vec3(0.0f + sin(glfwGetTime()) * 2.0f,  0.0f + sin(glfwGetTime() / 2.0f) * 1.0f, -3.0f)
-        };
 
         // create projection
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -310,25 +311,29 @@ int main()
         cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
         cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
         */
+        // -------------------------------------------------------------------------------------------
+        // Render Point Lights
+        
+        // Also used to render the cubes to visualize the light points as well
+        glm::vec3 pointLightPositions[] = {
+            glm::vec3(0.7f + sin(glfwGetTime()) * 2.0f,  0.2f + sin(glfwGetTime() / 2.0f) * 1.0f,  2.0f),
+            glm::vec3(2.3f + sin(glfwGetTime()) * 2.0f, -3.3f + sin(glfwGetTime() / 2.0f) * 1.0f, -4.0f),
+            glm::vec3(-4.0f + sin(glfwGetTime()) * 2.0f,  2.0f + sin(glfwGetTime() / 2.0f) * 1.0f, -12.0f),
+            glm::vec3(0.0f + sin(glfwGetTime()) * 2.0f,  0.0f + sin(glfwGetTime() / 2.0f) * 1.0f, -3.0f)
+        };
 
+        // change point light positions every frame
+        p1.SetPosition(pointLightPositions[0]);
+        p2.SetPosition(pointLightPositions[1]);
+        p3.SetPosition(pointLightPositions[2]);
+        p4.SetPosition(pointLightPositions[3]);
 
-        int i = 0;
-        for(const auto &pointLightPosition: pointLightPositions)
+        for(int i=0; i<PointLight::pointLights.size();++i)
         {
-            
-            
-            std::string pointLightIndex = "pointLights[" + std::to_string(i) + "].";
-            cubeShader.setVec3(pointLightIndex + "position", pointLightPosition);
-            cubeShader.setVec3(pointLightIndex + "ambient", 0.05f, 0.05f, 0.05f);
-            cubeShader.setVec3(pointLightIndex + "diffuse", 0.8f, 0.8f, 0.8f);
-            cubeShader.setVec3(pointLightIndex + "specular", 1.0f, 1.0f, 1.0f);
-            cubeShader.setFloat(pointLightIndex + "constant", 1.0f);
-            cubeShader.setFloat(pointLightIndex + "linear", 0.09f);
-            cubeShader.setFloat(pointLightIndex + "quadratic", 0.032f);
-            ++i;
+            PointLight::pointLights[i].Draw(cubeShader, camera, i);
         }
 
-
+        // -------------------------------------------------------------------------------------------
         UpdateLights(flashLight, directionalLight, window);
 
        
@@ -379,6 +384,7 @@ int main()
             lightShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

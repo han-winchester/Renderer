@@ -1,63 +1,70 @@
 #include "PointLight.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
-PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, const Shader& shader)
+std::vector<PointLight> PointLight::pointLights;
+int PointLight::lightPointNum = 0;
+
+PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
 	: m_Position(position),
 	m_Ambient(ambient),
 	m_Diffuse(diffuse),
 	m_Specular(specular),
 	m_Constant(constant),
 	m_Linear(linear),
-	m_Quadratic(quadratic),
-	m_Shader(shader),
-	m_EnablePointLight(true)
-
+	m_Quadratic(quadratic)
 {
+	
+	this->lightPointID = lightPointNum;
+	pointLights.push_back(*this);
+	lightPointNum += 1;
 }
 
 void PointLight::SetPosition(glm::vec3 position)
 {
-	m_Position = position;
+	PointLight::pointLights[this->lightPointID].m_Position = position;
 }
 
 void PointLight::SetAmbient(glm::vec3 ambient)
 {
-	m_Ambient = ambient;
+	PointLight::pointLights[this->lightPointID].m_Ambient = ambient;
 }
 
 void PointLight::SetDiffuse(glm::vec3 diffuse)
 {
-	m_Diffuse = diffuse;
+	PointLight::pointLights[this->lightPointID].m_Diffuse = diffuse;
 }
 
 void PointLight::SetSpecular(glm::vec3 specular)
 {
-	m_Specular = specular;
+	PointLight::pointLights[this->lightPointID].m_Specular = specular;
 }
 
 void PointLight::SetConstant(float constant)
 {
-	m_Constant = constant;
+	PointLight::pointLights[this->lightPointID].m_Constant = constant;
 }
 
 void PointLight::SetLinear(float linear)
 {
-	m_Linear = linear;
+	PointLight::pointLights[this->lightPointID].m_Linear = linear;
 }
 
 void PointLight::SetQuadratic(float quadratic)
 {
-	m_Quadratic = quadratic;
+	PointLight::pointLights[this->lightPointID].m_Quadratic = quadratic;
 
 }
 
-void PointLight::SetShader(const Shader& shader)
+void PointLight::Draw(Shader& shader, Camera& camera, int index)
 {
-	m_Shader = shader;
-	// TODO: Need to call all the setters above again?
-}
-
-void PointLight::EnablePointLight(bool enablePointLight)
-{
-	m_EnablePointLight = enablePointLight;
-	m_Shader.setBool("enablePointLight", m_EnablePointLight);
+	shader.use();
+	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].position", m_Position);
+	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].ambient", m_Ambient);
+	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].diffuse", m_Diffuse);
+	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].specular", m_Specular);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].constant", m_Constant);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].linear", m_Linear);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].quadratic", m_Quadratic);
 }

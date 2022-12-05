@@ -1,12 +1,16 @@
 #pragma once
 #include "Light.h"
+#include "Camera.h"
 #include "Shader.h"
 #include "glm/glm.hpp"
+#include <vector>
 class PointLight :
     public Light
 {
+    static int lightPointNum;
 public:
-    PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, const Shader& shader);
+    static std::vector<PointLight> pointLights;
+    PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
     void SetPosition(glm::vec3 position);
     void SetAmbient(glm::vec3 ambient);
     void SetDiffuse(glm::vec3 diffuse);
@@ -14,10 +18,10 @@ public:
     void SetConstant(float constant);
     void SetLinear(float linear);
     void SetQuadratic(float quadratic);
-    void SetShader(const Shader& shader);
-    void EnablePointLight(bool enablePointLight);
+    void Draw(Shader& shader, Camera& camera, int index);
 
 private:
+    int lightPointID;
     glm::vec3 m_Position;
     glm::vec3 m_Ambient;
     glm::vec3 m_Diffuse;
@@ -25,7 +29,5 @@ private:
     float m_Constant;
     float m_Linear;
     float m_Quadratic;
-    Shader m_Shader;
-    bool m_EnablePointLight;
 };
 
