@@ -1,6 +1,9 @@
 #version 330 core
 
 
+#define NR_POINT_LIGHTS 4  
+#define NR_SPOT_LIGHTS 1 
+
 struct Material 
 {
   sampler2D diffuse;
@@ -50,9 +53,9 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
-#define NR_POINT_LIGHTS 4  
+
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform SpotLight spotLight;
+uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 uniform Material material;
 uniform DirectionalLight dirLight;
 uniform sampler2D texture2;
@@ -78,7 +81,7 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 result = vec3(0.0);
     // phase 1: Directional lighting
-    if(directionalLightEnabled)
+    //if(directionalLightEnabled)
         result += CalculateDirectionalLight(dirLight, norm, viewDir);
 
     // phase 2: Point lights
@@ -86,8 +89,12 @@ void main()
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);   
         
     if(spotLightEnabled)
+    {
         // phase 3: Spot light
-        result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
+        for(int i = 0; i < NR_SPOT_LIGHTS; i++)
+            result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);  
+    }
+  
 
     // apply emission map
    // result += ApplyEmission();

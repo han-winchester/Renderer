@@ -218,8 +218,7 @@ int main()
         0.09f, 
         0.032f, 
         glm::cos(glm::radians(5.5f)), 
-        glm::cos(glm::radians(10.5f)), 
-        cubeShader
+        glm::cos(glm::radians(10.5f))
     );
 
     DirectionalLight directionalLight
@@ -334,6 +333,14 @@ int main()
         }
 
         // -------------------------------------------------------------------------------------------
+        // Render Spot Lights
+        for(int i=0; i<SpotLight::spotLights.size();++i)
+        {
+            SpotLight::spotLights[i].Draw(cubeShader);
+        }
+
+        // -------------------------------------------------------------------------------------------
+
         UpdateLights(flashLight, directionalLight, window);
 
        

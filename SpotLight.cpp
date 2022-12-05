@@ -1,6 +1,9 @@
 #include "SpotLight.h"
 
-SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff, const Shader& shader)
+std::vector<SpotLight> SpotLight::spotLights;
+int SpotLight::spotLightCount = 0;
+
+SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff)
 	: m_Position(position),
 	m_Direction(direction),
 	m_Ambient(ambient),
@@ -11,90 +14,81 @@ SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 ambient,
 	m_Quadratic(quadratic),
 	m_CutOff(cutOff),
 	m_OuterCutOff(outerCutOff),
-	m_Shader(shader),
 	m_EnableSpotLight(true)
 {
-	    m_Shader.setVec3("spotLight.position", m_Position);
-        m_Shader.setVec3("spotLight.direction", m_Direction);
-        m_Shader.setVec3("spotLight.ambient", m_Ambient);
-        m_Shader.setVec3("spotLight.diffuse", m_Diffuse);
-        m_Shader.setVec3("spotLight.specular", m_Specular);
-        m_Shader.setFloat("spotLight.constant", m_Constant);
-        m_Shader.setFloat("spotLight.linear", m_Linear);
-        m_Shader.setFloat("spotLight.quadratic", m_Quadratic);
-        m_Shader.setFloat("spotLight.cutOff", m_CutOff);
-        m_Shader.setFloat("spotLight.outerCutOff", m_OuterCutOff);
-		m_Shader.setBool("spotLightEnabled", m_EnableSpotLight);
+	this->spotLightID = spotLightCount;
+	spotLights.push_back(*this);
+	spotLightCount += 1;
 }
 
 void SpotLight::SetPosition(glm::vec3 position)
 {
-	m_Position = position;
-	m_Shader.setVec3("spotLight.position", m_Position);
+	SpotLight::spotLights[this->spotLightID].m_Position = position;
 }
 
 void SpotLight::SetDirection(glm::vec3 direction)
 {
-	m_Direction = direction;
-	m_Shader.setVec3("spotLight.direction", m_Direction);
+	SpotLight::spotLights[this->spotLightID].m_Direction = direction;
 }
 
 void SpotLight::SetAmbient(glm::vec3 ambient)
 {
-	m_Ambient = ambient;
-	m_Shader.setVec3("spotLight.ambient", m_Ambient);
+	SpotLight::spotLights[this->spotLightID].m_Ambient = ambient;
 }
 
 void SpotLight::SetDiffuse(glm::vec3 diffuse)
 {
-	m_Diffuse = diffuse;
-	m_Shader.setVec3("spotLight.diffuse", m_Diffuse);
+	SpotLight::spotLights[this->spotLightID].m_Diffuse = diffuse;
 }
 
 void SpotLight::SetSpecular(glm::vec3 specular)
 {
-	m_Specular = specular;
-	m_Shader.setVec3("spotLight.specular", m_Specular);
+	SpotLight::spotLights[this->spotLightID].m_Specular = specular;
 }
 
 void SpotLight::SetConstant(float constant)
 {
-	m_Constant = constant;
-	m_Shader.setFloat("spotLight.constant", m_Constant);
+	SpotLight::spotLights[this->spotLightID].m_Constant = constant;
 }
 
 void SpotLight::SetLinear(float linear)
 {
-	m_Linear = linear;
-	m_Shader.setFloat("spotLight.linear", m_Linear);
+	SpotLight::spotLights[this->spotLightID].m_Linear = linear;
 }
 
 void SpotLight::SetQuadratic(float quadratic)
 {
-	m_Quadratic = quadratic;
-	m_Shader.setFloat("spotLight.quadratic", m_Quadratic);
+	SpotLight::spotLights[this->spotLightID].m_Quadratic = quadratic;
 }
 
 void SpotLight::SetCutOff(float cutOff)
 {
-	m_CutOff = cutOff;
-	m_Shader.setFloat("spotLight.cutOff", m_CutOff);
+	SpotLight::spotLights[this->spotLightID].m_CutOff = cutOff;
 }
 
 void SpotLight::SetOuterCutOff(float outerCutOff)
 {
-	m_OuterCutOff = outerCutOff;
-	m_Shader.setFloat("spotLight.outerCutOff", m_OuterCutOff);
-}
-
-void SpotLight::SetShader(const Shader& shader)
-{
-	m_Shader = shader;
-	// TODO: Need to call all the setters above again?
+	SpotLight::spotLights[this->spotLightID].m_OuterCutOff = outerCutOff;
 }
 
 void SpotLight::EnableSpotLight(bool enableSpotLight)
 {
-	m_EnableSpotLight = enableSpotLight;
-	m_Shader.setBool("spotLightEnabled", m_EnableSpotLight);
+	SpotLight::spotLights[this->spotLightID].m_EnableSpotLight = enableSpotLight;
+}
+
+void SpotLight::Draw(Shader& shader)
+{
+	shader.use();
+	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].position"			,m_Position);
+	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].direction"			,m_Direction);
+	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].ambient"				,m_Ambient);
+	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].diffuse"				,m_Diffuse);
+	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].specular"			,m_Specular);
+	shader.setFloat("spotLights[" + std::to_string(this->spotLightID) + "].constant"			,m_Constant);
+	shader.setFloat("spotLights[" + std::to_string(this->spotLightID) + "].linear"				,m_Linear);
+	shader.setFloat("spotLights[" + std::to_string(this->spotLightID) + "].quadratic"			,m_Quadratic);
+	shader.setFloat("spotLights[" + std::to_string(this->spotLightID) + "].cutOff"				,m_CutOff);
+	shader.setFloat("spotLights[" + std::to_string(this->spotLightID) + "].outerCutOff"			,m_OuterCutOff);
+	shader.setBool(	"spotLightEnabled"															,m_EnableSpotLight);
+
 }

@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Lights">
       <UniqueIdentifier>{ecf825c2-d00f-4707-aba5-b6ecda1306b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{7e8b18b7-4895-4320-bdda-336efedef707}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Downloads\src\glad.c">
@@ -82,11 +85,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="CubeShader.vert">
-      <Filter>Source Files</Filter>
-    </Text>
     <Text Include="CubeShader.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
+    </Text>
+    <Text Include="CubeShader.vert">
+      <Filter>Source Files\Shaders</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
@@ -98,17 +101,17 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LightShader.vert">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="LightShader.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="LightShader.vert">
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="ModelShader.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="ModelShader.vert">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
