@@ -7,7 +7,7 @@
 class PointLight :
     public Light
 {
-    static int lightPointNum;
+    static int lightPointCount;
 public:
     static std::vector<PointLight> pointLights;
     PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
@@ -18,7 +18,7 @@ public:
     void SetConstant(float constant);
     void SetLinear(float linear);
     void SetQuadratic(float quadratic);
-    void Draw(Shader& shader, Camera& camera, int index);
+    void Draw(Shader& shader);
 
 private:
     int lightPointID;

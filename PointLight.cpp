@@ -4,7 +4,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 std::vector<PointLight> PointLight::pointLights;
-int PointLight::lightPointNum = 0;
+int PointLight::lightPointCount = 0;
 
 PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
 	: m_Position(position),
@@ -16,9 +16,9 @@ PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse,
 	m_Quadratic(quadratic)
 {
 	
-	this->lightPointID = lightPointNum;
+	this->lightPointID = lightPointCount;
 	pointLights.push_back(*this);
-	lightPointNum += 1;
+	lightPointCount += 1;
 }
 
 void PointLight::SetPosition(glm::vec3 position)
@@ -57,7 +57,7 @@ void PointLight::SetQuadratic(float quadratic)
 
 }
 
-void PointLight::Draw(Shader& shader, Camera& camera, int index)
+void PointLight::Draw(Shader& shader)
 {
 	shader.use();
 	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].position", m_Position);

@@ -330,7 +330,7 @@ int main()
 
         for(int i=0; i<PointLight::pointLights.size();++i)
         {
-            PointLight::pointLights[i].Draw(cubeShader, camera, i);
+            PointLight::pointLights[i].Draw(cubeShader);
         }
 
         // -------------------------------------------------------------------------------------------
