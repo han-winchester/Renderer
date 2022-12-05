@@ -13,8 +13,6 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 
-// TODO: Directional Light enabled not working; Currently commented out in the cube shader
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -25,9 +23,6 @@ unsigned int loadTexture(const char* path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// lighting
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -46,8 +41,8 @@ bool enableDirectionalLight = true;
 
 int main()
 {
+    // -------------------------------------------------------------------------------------------
     // glfw: initialize and configure
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -58,8 +53,8 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    // -------------------------------------------------------------------------------------------
     // glfw window creation
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Renderer", NULL, NULL);
     if (window == NULL)
     {
@@ -72,9 +67,9 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
+
+    // -------------------------------------------------------------------------------------------
     // glad: load all OpenGL function pointers
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -84,23 +79,22 @@ int main()
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);
 
+    // -------------------------------------------------------------------------------------------
     // configure global opengl state
-    // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
+    // -------------------------------------------------------------------------------------------
     // build and compile our shader zprogram
-    // ------------------------------------
     Shader cubeShader("CubeShader.vert", "CubeShader.frag");
     Shader lightShader("LightShader.vert", "LightShader.frag");
     Shader modelShader("ModelShader.vert", "ModelShader.frag");
 
+    // -------------------------------------------------------------------------------------------
     // load models
-// -----------
     Model ourModel("../Assets/backpack/backpack.obj");
 
-
+    // -------------------------------------------------------------------------------------------
     // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
     float vertices[] = {
     // positions            // tex coords   // normals
     -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,     0.0f,  0.0f, -1.0f,
@@ -176,23 +170,24 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // -------------------------------------------------------------------------------------------
     // load and create a texture 
-    // -------------------------
     unsigned int diffuseMap = loadTexture("container.jpg");
 
     unsigned int specularmap = loadTexture("containerspecular.png");
 
     unsigned int emissionmap = loadTexture("matrix.jpg");
-   
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+
     // -------------------------------------------------------------------------------------------
+    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
     cubeShader.setInt("material.emission", 2);
    
-
-    // rotating cubes
+    // -------------------------------------------------------------------------------------------
+    // Initialize objects
+    // rotating wooden box cubes
     glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
     glm::vec3(2.0f,  5.0f, -15.0f),
@@ -206,7 +201,11 @@ int main()
     glm::vec3(-1.3f,  1.0f, -1.5f)
     };
 
-
+    // -------------------------------------------------------------------------------------------
+    // Initialize Light objects
+    // NOTE: If adding more lights remember to increase the number in the cubeShader
+    
+    // The flashlight the player controls
     SpotLight flashLight
     (
         camera.Position, 
@@ -221,6 +220,7 @@ int main()
         glm::cos(glm::radians(10.5f))
     );
     
+    // Directional Lights
     DirectionalLight directionalLight(glm::vec3(-0.2f, -1.0f, -0.3f),glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.05f, 0.05f, 0.05),glm::vec3(0.2f, 0.2f, 0.2f));
 
     // Create PointLights
@@ -229,25 +229,21 @@ int main()
     PointLight p3(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
     PointLight p4(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 
-
+    // -------------------------------------------------------------------------------------------
     // render loop
-    // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // per frame time logic
-        // -----------------------
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        // -------------------------------------------------------------------------------------------
         // input
-        // -----
         processInput(window);
 
+        // -------------------------------------------------------------------------------------------
         // render
-        // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -261,8 +257,8 @@ int main()
         glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f)); // Rotates the front most cube in the scene
 
+        // -------------------------------------------------------------------------------------------
         // render model
-        //--------------
         // activate model shader
         modelShader.use();
         modelShader.setMat4("projection", projection);
@@ -278,7 +274,7 @@ int main()
 
 
          // render boxes
-        //----------------------
+        // -------------------------------------------------------------------------------------------
         // activate boxes shader
         cubeShader.use();
 
@@ -287,16 +283,8 @@ int main()
         cubeShader.setFloat("time", sin(glfwGetTime()));
         cubeShader.setBool("isBlackLight", isBlackLight);
 
-        // directional light
-        /*
-        cubeShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        cubeShader.setVec3("dirLight.ambient", 0, 0, 0);
-        cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
-        cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
-        */
-
-        
-        // light properties
+        // -------------------------------------------------------------------------------------------
+        // render lights
         // Rainbow effect
         glm::vec3 lightColor;
         lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
@@ -344,7 +332,7 @@ int main()
         // -------------------------------------------------------------------------------------------
         
 
-        UpdateLights(flashLight, directionalLight, window);
+        UpdateLights(flashLight, directionalLight, window); // Move to ProcessInput???
 
        
         cubeShader.setMat4("projection", projection);
@@ -386,6 +374,8 @@ int main()
         lightShader.setMat4("view", view);
 
         glBindVertexArray(lightVAO);
+
+        // renders multiple translating white cubes to visualize the point lights
         for (unsigned int i = 0; i < 4; i++)
         {
             model = glm::mat4(1.0f);
