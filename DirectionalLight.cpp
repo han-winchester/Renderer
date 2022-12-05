@@ -47,4 +47,5 @@ void DirectionalLight::SetShader(const Shader& shader)
 void DirectionalLight::EnableDirectionalLight(bool enableDirectionalLight)
 {
 	m_EnableDirectionalLight = enableDirectionalLight;
+	m_Shader.setBool("directionalLightEnabled", m_EnableDirectionalLight);
 }

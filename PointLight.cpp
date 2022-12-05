@@ -60,11 +60,11 @@ void PointLight::SetQuadratic(float quadratic)
 void PointLight::Draw(Shader& shader)
 {
 	shader.use();
-	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].position", m_Position);
-	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].ambient", m_Ambient);
-	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].diffuse", m_Diffuse);
-	shader.setVec3("pointLights[" + std::to_string(this->lightPointID) + "].specular", m_Specular);
-	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].constant", m_Constant);
-	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].linear", m_Linear);
-	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].quadratic", m_Quadratic);
+	shader.setVec3(	"pointLights[" + std::to_string(this->lightPointID) + "].position"	,m_Position);
+	shader.setVec3(	"pointLights[" + std::to_string(this->lightPointID) + "].ambient"	,m_Ambient);
+	shader.setVec3(	"pointLights[" + std::to_string(this->lightPointID) + "].diffuse"	,m_Diffuse);
+	shader.setVec3(	"pointLights[" + std::to_string(this->lightPointID) + "].specular"	,m_Specular);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].constant"	,m_Constant);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].linear"	,m_Linear);
+	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].quadratic"	,m_Quadratic);
 }
