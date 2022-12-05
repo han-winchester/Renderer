@@ -1,51 +1,53 @@
 #include "DirectionalLight.h"
 
-DirectionalLight::DirectionalLight( glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, const Shader& shader)
+std::vector<DirectionalLight> DirectionalLight::directionalLights;
+int DirectionalLight::directionalLightCount = 0;
+
+DirectionalLight::DirectionalLight( glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
 	: m_Direction(direction),
 	m_Ambient(ambient),
 	m_Diffuse(diffuse),
 	m_Specular(specular),
-	m_Shader(shader),
 	m_EnableDirectionalLight(true)
 {
-	m_Shader.setVec3("dirLight.direction", m_Direction);
-    m_Shader.setVec3("dirLight.ambient", m_Ambient);
-    m_Shader.setVec3("dirLight.diffuse", m_Diffuse);
-    m_Shader.setVec3("dirLight.specular", m_Specular);
+	this->directionalLightID = directionalLightCount;
+	directionalLights.push_back(*this);
+	directionalLightCount += 1;
 }
 
 void DirectionalLight::SetDirection(glm::vec3 direction)
 {
-	m_Direction = direction;
-	m_Shader.setVec3("dirLight.direction", m_Direction);
+	DirectionalLight::directionalLights[this->directionalLightID].m_Direction = direction;
 }
 
 void DirectionalLight::SetAmbient(glm::vec3 ambient)
 {
-	m_Ambient = ambient;
-	m_Shader.setVec3("dirLight.ambient", m_Ambient);
+	DirectionalLight::directionalLights[this->directionalLightID].m_Ambient = ambient;
 }
 
 void DirectionalLight::SetDiffuse(glm::vec3 diffuse)
 {
-	m_Diffuse = diffuse;
-	m_Shader.setVec3("dirLight.diffuse", m_Diffuse);
+	DirectionalLight::directionalLights[this->directionalLightID].m_Diffuse = diffuse;
 }
 
 void DirectionalLight::SetSpecular(glm::vec3 specular)
 {
-	m_Specular = specular;
-	m_Shader.setVec3("dirLight.specular", m_Specular);
+	DirectionalLight::directionalLights[this->directionalLightID].m_Specular = specular;
 }
 
-void DirectionalLight::SetShader(const Shader& shader)
-{
-	m_Shader = shader;
-	// TODO: Need to call all the setters above again?
-}
 
 void DirectionalLight::EnableDirectionalLight(bool enableDirectionalLight)
 {
-	m_EnableDirectionalLight = enableDirectionalLight;
-	m_Shader.setBool("directionalLightEnabled", m_EnableDirectionalLight);
+	DirectionalLight::directionalLights[this->directionalLightID].m_EnableDirectionalLight = enableDirectionalLight;
+}
+
+void DirectionalLight::Draw(Shader& shader)
+{
+	shader.use();
+	shader.setVec3(	"directionalLights[" + std::to_string(this->directionalLightID) + "].direction"		,m_Direction);
+	shader.setVec3(	"directionalLights[" + std::to_string(this->directionalLightID) + "].ambient"		,m_Ambient);
+	shader.setVec3(	"directionalLights[" + std::to_string(this->directionalLightID) + "].diffuse"		,m_Diffuse);
+	shader.setVec3(	"directionalLights[" + std::to_string(this->directionalLightID) + "].specular"		,m_Specular);
+	shader.setBool(	"directionalLightEnabled"															,m_EnableDirectionalLight);
+
 }

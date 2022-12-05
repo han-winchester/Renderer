@@ -220,21 +220,14 @@ int main()
         glm::cos(glm::radians(5.5f)), 
         glm::cos(glm::radians(10.5f))
     );
-
-    DirectionalLight directionalLight
-    (
-       glm::vec3(-0.2f, -1.0f, -0.3f),
-       glm::vec3(0.0f, 0.0f, 0.0f),
-       glm::vec3(0.05f, 0.05f, 0.05),
-       glm::vec3(0.2f, 0.2f, 0.2f),
-       cubeShader
-    );
+    
+    DirectionalLight directionalLight(glm::vec3(-0.2f, -1.0f, -0.3f),glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.05f, 0.05f, 0.05),glm::vec3(0.2f, 0.2f, 0.2f));
 
     // Create PointLights
-    PointLight p1(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-    PointLight p2(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-    PointLight p3(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-    PointLight p4(glm::vec3(0.0f),glm::vec3(0.05f, 0.05f, 0.05f),glm::vec3(0.8f, 0.8f, 0.8f),glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p1(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p2(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p3(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p4(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 
 
     // render loop
@@ -256,15 +249,6 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // light properties
-        // Rainbow effect
-        glm::vec3 lightColor;
-        lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
-        lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
-        lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
 
 
         // create projection
@@ -310,6 +294,17 @@ int main()
         cubeShader.setVec3("dirLight.diffuse", 0.05f, 0.05f, 0.05f);
         cubeShader.setVec3("dirLight.specular", 0.2f, 0.2f, 0.2f);
         */
+
+        
+        // light properties
+        // Rainbow effect
+        glm::vec3 lightColor;
+        lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
+        lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
+        lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
+        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
         // -------------------------------------------------------------------------------------------
         // Render Point Lights
         
@@ -340,6 +335,14 @@ int main()
         }
 
         // -------------------------------------------------------------------------------------------
+        // Render Directional Lights
+        for(int i=0; i<DirectionalLight::directionalLights.size();++i)
+        {
+            DirectionalLight::directionalLights[i].Draw(cubeShader);
+        }
+        
+        // -------------------------------------------------------------------------------------------
+        
 
         UpdateLights(flashLight, directionalLight, window);
 

@@ -3,6 +3,7 @@
 
 #define NR_POINT_LIGHTS 4  
 #define NR_SPOT_LIGHTS 1 
+#define NR_DIRECTIONAL_LIGHTS 1 
 
 struct Material 
 {
@@ -56,6 +57,7 @@ in vec3 FragPos;
 
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
+uniform DirectionalLight directionalLights[NR_DIRECTIONAL_LIGHTS];
 uniform Material material;
 uniform DirectionalLight dirLight;
 uniform sampler2D texture2;
@@ -81,9 +83,11 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 result = vec3(0.0);
     // phase 1: Directional lighting
-    //if(directionalLightEnabled)
-        result += CalculateDirectionalLight(dirLight, norm, viewDir);
-
+    if(directionalLightEnabled)
+    {
+        for(int i=0; i< NR_DIRECTIONAL_LIGHTS; i++)
+            result += CalculateDirectionalLight(directionalLights[i], norm, viewDir);
+    }
     // phase 2: Point lights
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);   
