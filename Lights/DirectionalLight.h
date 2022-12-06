@@ -14,7 +14,7 @@ public:
     void SetDiffuse(glm::vec3 diffuse);
     void SetSpecular(glm::vec3 specular);
     void EnableDirectionalLight(bool enableDirectionalLight);
-    void Draw(Shader& shader);
+    void Draw(Shader& shader) const;
 
 private:
     int directionalLightID;

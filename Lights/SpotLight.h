@@ -19,7 +19,7 @@ public:
     void SetCutOff(float cutOff);
     void SetOuterCutOff(float outerCutOff);
     void EnableSpotLight(bool enableSpotLight);
-    void Draw(Shader& shader);
+    void Draw(Shader& shader) const;
 
 private:
     int spotLightID;

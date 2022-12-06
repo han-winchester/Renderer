@@ -16,7 +16,7 @@ public:
     void SetConstant(float constant);
     void SetLinear(float linear);
     void SetQuadratic(float quadratic);
-    void Draw(Shader& shader);
+    void Draw(Shader& shader) const;
 
 private:
     int lightPointID;

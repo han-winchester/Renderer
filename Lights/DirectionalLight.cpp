@@ -1,14 +1,14 @@
 #include "DirectionalLight.h"
 
 std::vector<DirectionalLight> DirectionalLight::directionalLights;
-int DirectionalLight::directionalLightCount = 0;
+int DirectionalLight::directionalLightCount{};
 
 DirectionalLight::DirectionalLight( glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
-	: m_Direction(direction),
-	m_Ambient(ambient),
-	m_Diffuse(diffuse),
-	m_Specular(specular),
-	m_EnableDirectionalLight(true)
+	: m_Direction{direction},
+	m_Ambient{ambient},
+	m_Diffuse{diffuse},
+	m_Specular{specular},
+	m_EnableDirectionalLight{true}
 {
 	this->directionalLightID = directionalLightCount;
 	directionalLights.push_back(*this);
@@ -41,7 +41,7 @@ void DirectionalLight::EnableDirectionalLight(bool enableDirectionalLight)
 	DirectionalLight::directionalLights[this->directionalLightID].m_EnableDirectionalLight = enableDirectionalLight;
 }
 
-void DirectionalLight::Draw(Shader& shader)
+void DirectionalLight::Draw(Shader& shader) const
 {
 	shader.use();
 	shader.setVec3(	"directionalLights[" + std::to_string(this->directionalLightID) + "].direction"		,m_Direction);

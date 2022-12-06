@@ -21,22 +21,22 @@ void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH{800};
+const unsigned int SCR_HEIGHT{600};
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
+Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
+float lastX{SCR_WIDTH / 2.0f};
+float lastY{SCR_HEIGHT / 2.0f};
+bool firstMouse{true};
 
 // timing
-float deltaTime = 0.0f; // time between current and last frame
-float lastFrame = 0.0f; // time of last frame
+float deltaTime{0.0f}; // time between current and last frame
+float lastFrame{0.0f}; // time of last frame
 
-bool isBlackLight = false;
-bool enableFlashLight = true;
-bool enableDirectionalLight = true;
+bool isBlackLight{false};
+bool enableFlashLight{true};
+bool enableDirectionalLight{true};
 
 
 int main()
@@ -55,7 +55,7 @@ int main()
 
     // -------------------------------------------------------------------------------------------
     // glfw window creation
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Renderer", NULL, NULL);
+    GLFWwindow* window{glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Renderer", NULL, NULL)};
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -85,13 +85,13 @@ int main()
 
     // -------------------------------------------------------------------------------------------
     // build and compile our shader zprogram
-    Shader cubeShader("Shaders/CubeShader.vert", "Shaders/CubeShader.frag");
-    Shader lightShader("Shaders/LightShader.vert", "Shaders/LightShader.frag");
-    Shader modelShader("Shaders/ModelShader.vert", "Shaders/ModelShader.frag");
+    Shader cubeShader{"Shaders/CubeShader.vert", "Shaders/CubeShader.frag"};
+    Shader lightShader{"Shaders/LightShader.vert", "Shaders/LightShader.frag"};
+    Shader modelShader{"Shaders/ModelShader.vert", "Shaders/ModelShader.frag"};
 
     // -------------------------------------------------------------------------------------------
     // load models
-    Model ourModel("../Assets/backpack/backpack.obj");
+    Model ourModel{"../Assets/backpack/backpack.obj"};
 
     // -------------------------------------------------------------------------------------------
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -141,7 +141,7 @@ int main()
     };
 
     //Mesh cube(vertices, stride, );
-    unsigned int VBO, VAO;
+    unsigned int VBO{}, VAO{};
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -161,7 +161,7 @@ int main()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    unsigned int lightVAO;
+    unsigned int lightVAO{};
     glGenVertexArrays(1, &lightVAO);
     glBindVertexArray(lightVAO);
 
@@ -172,11 +172,11 @@ int main()
 
     // -------------------------------------------------------------------------------------------
     // load and create a texture 
-    unsigned int diffuseMap  = loadTexture("../Assets/Textures/Diffuse/container.jpg");
+    unsigned int diffuseMap{loadTexture("../Assets/Textures/Diffuse/container.jpg")};
 
-    unsigned int specularmap = loadTexture("../Assets/Textures/Specular/containerspecular.png");
+    unsigned int specularmap{loadTexture("../Assets/Textures/Specular/containerspecular.png")};
 
-    unsigned int emissionmap = loadTexture("../Assets/Textures/Emission/matrix.jpg");
+    unsigned int emissionmap{loadTexture("../Assets/Textures/Emission/matrix.jpg")};
 
     // -------------------------------------------------------------------------------------------
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
@@ -207,7 +207,7 @@ int main()
     
     // The flashlight the player controls
     SpotLight flashLight
-    (
+    {
         camera.Position, 
         camera.Front, 
         glm::vec3(0.0f, 0.0f, 0.0f), 
@@ -218,22 +218,22 @@ int main()
         0.032f, 
         glm::cos(glm::radians(5.5f)), 
         glm::cos(glm::radians(10.5f))
-    );
+    };
     
     // Directional Lights
-    DirectionalLight directionalLight(glm::vec3(-0.2f, -1.0f, -0.3f),glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.05f, 0.05f, 0.05),glm::vec3(0.2f, 0.2f, 0.2f));
+    DirectionalLight directionalLight{glm::vec3(-0.2f, -1.0f, -0.3f),glm::vec3(0.0f, 0.0f, 0.0f),glm::vec3(0.05f, 0.05f, 0.05),glm::vec3(0.2f, 0.2f, 0.2f)};
 
     // Create PointLights
-    PointLight p1(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-    PointLight p2(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p1{glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f};
+    PointLight p2{glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f};
     PointLight p3(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-    PointLight p4(glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+    PointLight p4{glm::vec3(0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f};
 
     // -------------------------------------------------------------------------------------------
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        float currentFrame = static_cast<float>(glfwGetTime());
+        auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
@@ -248,13 +248,13 @@ int main()
 
 
         // create projection
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection{glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f)};
 
         // camera/view transformation
-        glm::mat4 view = camera.GetViewMatrix();
+        glm::mat4 view{camera.GetViewMatrix()};
 
         // create transformations
-        glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        glm::mat4 model{glm::mat4(1.0f)}; // make sure to initialize matrix to identity matrix first
         model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f)); // Rotates the front most cube in the scene
 
         // -------------------------------------------------------------------------------------------
@@ -286,12 +286,12 @@ int main()
         // -------------------------------------------------------------------------------------------
         // render lights
         // Rainbow effect
-        glm::vec3 lightColor;
+        glm::vec3 lightColor{};
         lightColor.x = static_cast<float>(sin(glfwGetTime() * 2.0));
         lightColor.y = static_cast<float>(sin(glfwGetTime() * 0.7));
         lightColor.z = static_cast<float>(sin(glfwGetTime() * 1.3));
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+        glm::vec3 diffuseColor{lightColor * glm::vec3(0.5f)};
+        glm::vec3 ambientColor{diffuseColor * glm::vec3(0.2f)};
 
         // -------------------------------------------------------------------------------------------
         // Render Point Lights
@@ -310,23 +310,23 @@ int main()
         p3.SetPosition(pointLightPositions[2]);
         p4.SetPosition(pointLightPositions[3]);
 
-        for(int i=0; i<PointLight::pointLights.size();++i)
+        for(const auto& pointLight : PointLight::pointLights)
         {
-            PointLight::pointLights[i].Draw(cubeShader);
+            pointLight.Draw(cubeShader);
         }
 
         // -------------------------------------------------------------------------------------------
         // Render Spot Lights
-        for(int i=0; i<SpotLight::spotLights.size();++i)
+        for(const auto& spotLight : SpotLight::spotLights)
         {
-            SpotLight::spotLights[i].Draw(cubeShader);
+            spotLight.Draw(cubeShader);
         }
 
         // -------------------------------------------------------------------------------------------
         // Render Directional Lights
-        for(int i=0; i<DirectionalLight::directionalLights.size();++i)
+        for(const auto& directionalLight : DirectionalLight::directionalLights)
         {
-            DirectionalLight::directionalLights[i].Draw(cubeShader);
+            directionalLight.Draw(cubeShader);
         }
         
         // -------------------------------------------------------------------------------------------
@@ -352,11 +352,11 @@ int main()
         //glDrawArrays(GL_TRIANGLES, 0, 36); // Only render 1 box in scene - comment out the for loop below
         
         // renders multiple rotating boxes
-        for (unsigned int i = 0; i < 10; i++)
+        for (unsigned int i{0}; i < 10; i++)
         {
-            glm::mat4 model = glm::mat4(1.0f);
+            glm::mat4 model{glm::mat4(1.0f)};
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
+            float angle{20.0f * i};
             if(i%3==0)
                 model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.3f, 0.5f));
             else
@@ -376,7 +376,7 @@ int main()
         glBindVertexArray(lightVAO);
 
         // renders multiple translating white cubes to visualize the point lights
-        for (unsigned int i = 0; i < 4; i++)
+        for (auto i{0}; i < 4; i++)
         {
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
@@ -458,8 +458,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+    float xpos{static_cast<float>(xposIn)};
+    float ypos{static_cast<float>(yposIn)};
 
     if (firstMouse)
     {
@@ -488,14 +488,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // ---------------------------------------------------
 unsigned int loadTexture(char const* path)
 {
-    unsigned int textureID;
+    unsigned int textureID{};
     glGenTextures(1, &textureID);
 
-    int width, height, nrComponents;
-    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+    int width{}, height{}, nrComponents{};
+    unsigned char* data{stbi_load(path, &width, &height, &nrComponents, 0)};
     if (data)
     {
-        GLenum format;
+        GLenum format{};
         if (nrComponents == 1)
             format = GL_RED;
         else if (nrComponents == 3)

@@ -1,16 +1,16 @@
 #include "PointLight.h"
 
 std::vector<PointLight> PointLight::pointLights;
-int PointLight::lightPointCount = 0;
+int PointLight::lightPointCount{};
 
 PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
-	: m_Position(position),
-	m_Ambient(ambient),
-	m_Diffuse(diffuse),
-	m_Specular(specular),
-	m_Constant(constant),
-	m_Linear(linear),
-	m_Quadratic(quadratic)
+	: m_Position{position},
+	m_Ambient{ambient},
+	m_Diffuse{diffuse},
+	m_Specular{specular},
+	m_Constant{constant},
+	m_Linear{linear},
+	m_Quadratic{quadratic}
 {
 	
 	this->lightPointID = lightPointCount;
@@ -54,7 +54,7 @@ void PointLight::SetQuadratic(float quadratic)
 
 }
 
-void PointLight::Draw(Shader& shader)
+void PointLight::Draw(Shader& shader) const
 {
 	shader.use();
 	shader.setVec3(	"pointLights[" + std::to_string(this->lightPointID) + "].position"	,m_Position);

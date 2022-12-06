@@ -1,20 +1,20 @@
 #include "SpotLight.h"
 
 std::vector<SpotLight> SpotLight::spotLights;
-int SpotLight::spotLightCount = 0;
+int SpotLight::spotLightCount{};
 
 SpotLight::SpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff)
-	: m_Position(position),
-	m_Direction(direction),
-	m_Ambient(ambient),
-	m_Diffuse(diffuse),
-	m_Specular(specular),
-	m_Constant(constant),
-	m_Linear(linear),
-	m_Quadratic(quadratic),
-	m_CutOff(cutOff),
-	m_OuterCutOff(outerCutOff),
-	m_EnableSpotLight(true)
+	: m_Position{position},
+	m_Direction{direction},
+	m_Ambient{ambient},
+	m_Diffuse{diffuse},
+	m_Specular{specular},
+	m_Constant{constant},
+	m_Linear{linear},
+	m_Quadratic{quadratic},
+	m_CutOff{cutOff},
+	m_OuterCutOff{outerCutOff},
+	m_EnableSpotLight{true}
 {
 	this->spotLightID = spotLightCount;
 	spotLights.push_back(*this);
@@ -76,7 +76,7 @@ void SpotLight::EnableSpotLight(bool enableSpotLight)
 	SpotLight::spotLights[this->spotLightID].m_EnableSpotLight = enableSpotLight;
 }
 
-void SpotLight::Draw(Shader& shader)
+void SpotLight::Draw(Shader& shader) const
 {
 	shader.use();
 	shader.setVec3(	"spotLights[" + std::to_string(this->spotLightID) + "].position"			,m_Position);

@@ -3,10 +3,10 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     // 1. retrieve the vertex/fragment source code from filePath
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
+    std::string vertexCode{};
+    std::string fragmentCode{};
+    std::ifstream vShaderFile{};
+    std::ifstream fShaderFile{};
     // ensure ifstream objects can throw exceptions:
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -15,7 +15,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
         // open files
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
+        std::stringstream vShaderStream{}, fShaderStream{};
         // read file's buffer contents into streams
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
@@ -30,10 +30,10 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     {
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
     }
-    const char* vShaderCode = vertexCode.c_str();
-    const char* fShaderCode = fragmentCode.c_str();
+    const char* vShaderCode{vertexCode.c_str()};
+    const char* fShaderCode{fragmentCode.c_str()};
     // 2. compile shaders
-    unsigned int vertex, fragment;
+    unsigned int vertex{}, fragment{};
     // vertex shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertex, 1, &vShaderCode, NULL);
@@ -96,8 +96,8 @@ void Shader::setVec3(const std::string& name, float x, float y, float z) const
 // ------------------------------------------------------------------------
 void Shader::checkCompileErrors(unsigned int shader, std::string type)
 {
-    int success;
-    char infoLog[1024];
+    int success{};
+    char infoLog[1024]{};
     if (type != "PROGRAM")
     {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
