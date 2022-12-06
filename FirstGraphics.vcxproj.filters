@@ -42,16 +42,13 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
+    <ClCompile Include="Lights\SpotLight.cpp">
       <Filter>Source Files\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="PointLight.cpp">
+    <ClCompile Include="Lights\PointLight.cpp">
       <Filter>Source Files\Lights</Filter>
     </ClCompile>
-    <ClCompile Include="SpotLight.cpp">
-      <Filter>Source Files\Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectionalLight.cpp">
+    <ClCompile Include="Lights\DirectionalLight.cpp">
       <Filter>Source Files\Lights</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,46 +68,33 @@
     <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
+    <ClInclude Include="Lights\DirectionalLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpotLight.h">
+    <ClInclude Include="Lights\PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionalLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.h">
+    <ClInclude Include="Lights\SpotLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="CubeShader.frag">
-      <Filter>Source Files\Shaders</Filter>
-    </Text>
-    <Text Include="CubeShader.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="container.jpg">
-      <Filter>Source Files</Filter>
-    </Image>
-    <Image Include="awesomeface.png">
-      <Filter>Source Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="LightShader.frag">
+    <None Include="Shaders\CubeShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="LightShader.vert">
+    <None Include="Shaders\CubeShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="ModelShader.frag">
+    <None Include="Shaders\LightShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="ModelShader.vert">
+    <None Include="Shaders\LightShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\ModelShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\ModelShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

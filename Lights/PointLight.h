@@ -1,11 +1,9 @@
 #pragma once
-#include "Light.h"
-#include "Camera.h"
-#include "Shader.h"
-#include "glm/glm.hpp"
+#include "../Camera.h"
+#include "../Shader.h"
+#include "../glm/glm.hpp"
 #include <vector>
-class PointLight :
-    public Light
+class PointLight
 {
     static int lightPointCount;
 public:

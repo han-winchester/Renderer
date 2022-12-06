@@ -1,11 +1,9 @@
 #pragma once
-#include "Light.h"
-#include "Shader.h"
-#include "glm/glm.hpp"
+#include "../Shader.h"
+#include "../glm/glm.hpp"
 #include <vector>
 
-class DirectionalLight :
-    public Light
+class DirectionalLight
 {
     static int directionalLightCount;
 public:

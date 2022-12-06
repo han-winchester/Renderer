@@ -1,10 +1,8 @@
 #pragma once
-#include "Light.h"
-#include "Shader.h"
-#include "glm/glm.hpp"
+#include "../Shader.h"
+#include "../glm/glm.hpp"
 #include <vector>
-class SpotLight :
-    public Light
+class SpotLight
 {
     static int spotLightCount;
 public:

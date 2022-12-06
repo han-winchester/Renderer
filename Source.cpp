@@ -9,9 +9,9 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "SpotLight.h"
-#include "DirectionalLight.h"
-#include "PointLight.h"
+#include "Lights/SpotLight.h"
+#include "Lights/DirectionalLight.h"
+#include "Lights/PointLight.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -85,9 +85,9 @@ int main()
 
     // -------------------------------------------------------------------------------------------
     // build and compile our shader zprogram
-    Shader cubeShader("CubeShader.vert", "CubeShader.frag");
-    Shader lightShader("LightShader.vert", "LightShader.frag");
-    Shader modelShader("ModelShader.vert", "ModelShader.frag");
+    Shader cubeShader("Shaders/CubeShader.vert", "Shaders/CubeShader.frag");
+    Shader lightShader("Shaders/LightShader.vert", "Shaders/LightShader.frag");
+    Shader modelShader("Shaders/ModelShader.vert", "Shaders/ModelShader.frag");
 
     // -------------------------------------------------------------------------------------------
     // load models
@@ -172,11 +172,11 @@ int main()
 
     // -------------------------------------------------------------------------------------------
     // load and create a texture 
-    unsigned int diffuseMap = loadTexture("container.jpg");
+    unsigned int diffuseMap  = loadTexture("../Assets/Textures/Diffuse/container.jpg");
 
-    unsigned int specularmap = loadTexture("containerspecular.png");
+    unsigned int specularmap = loadTexture("../Assets/Textures/Specular/containerspecular.png");
 
-    unsigned int emissionmap = loadTexture("matrix.jpg");
+    unsigned int emissionmap = loadTexture("../Assets/Textures/Emission/matrix.jpg");
 
     // -------------------------------------------------------------------------------------------
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
