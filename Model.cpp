@@ -1,3 +1,5 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
+
 #include "Model.h"
 
 Model::Model(const std::string path)

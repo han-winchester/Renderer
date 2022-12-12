@@ -1,5 +1,7 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
 #ifndef MESH_H
 #define MESH_H
+
 
 #include <glad/glad.h>
 #include "glm/gtc/matrix_transform.hpp"

@@ -1,3 +1,4 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
 #include "Shader.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)

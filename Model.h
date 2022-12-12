@@ -1,3 +1,4 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
 #ifndef MODEL_H
 #define MODEL_H
 

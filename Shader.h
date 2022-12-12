@@ -1,3 +1,4 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
 #ifndef SHADER_H
 #define SHADER_H
 

@@ -20,11 +20,11 @@ void UpdateLights(SpotLight flashLight, DirectionalLight directionalLight, GLFWw
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
-// settings
+// screen settings
 const unsigned int SCR_WIDTH{800};
 const unsigned int SCR_HEIGHT{600};
 
-// camera
+// camera settings
 Camera camera{glm::vec3(0.0f, 0.0f, 3.0f)};
 float lastX{SCR_WIDTH / 2.0f};
 float lastY{SCR_HEIGHT / 2.0f};
@@ -54,7 +54,6 @@ int main()
 #endif
 
     // -------------------------------------------------------------------------------------------
-    // glfw window creation
     GLFWwindow* window{glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Renderer", NULL, NULL)};
     if (window == NULL)
     {
@@ -69,7 +68,6 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // -------------------------------------------------------------------------------------------
-    // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -80,11 +78,10 @@ int main()
     stbi_set_flip_vertically_on_load(true);
 
     // -------------------------------------------------------------------------------------------
-    // configure global opengl state
     glEnable(GL_DEPTH_TEST);
 
     // -------------------------------------------------------------------------------------------
-    // build and compile our shader zprogram
+    // build and compile our shaders
     Shader cubeShader{"Shaders/CubeShader.vert", "Shaders/CubeShader.frag"};
     Shader lightShader{"Shaders/LightShader.vert", "Shaders/LightShader.frag"};
     Shader modelShader{"Shaders/ModelShader.vert", "Shaders/ModelShader.frag"};
@@ -94,7 +91,7 @@ int main()
     Model ourModel{"../Assets/backpack/backpack.obj"};
 
     // -------------------------------------------------------------------------------------------
-    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // set up vertex data (and buffers) and configure vertex attributes
     float vertices[] = {
     // positions            // tex coords   // normals
     -0.5f, -0.5f, -0.5f,    0.0f, 0.0f,     0.0f,  0.0f, -1.0f,
@@ -140,9 +137,16 @@ int main()
     -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,     0.0f,  1.0f,  0.0f
     };
 
-    //Mesh cube(vertices, stride, );
-    unsigned int VBO{}, VAO{};
+    /*
+    Shape square{primitive type = square, textured? = true}
+    square.GetVertices();
+    square.GetPositionCount();
+    square.GetStrideCount();
+    square.GetOffset();
+    */
 
+    unsigned int VBO{}, VAO{};
+    
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -179,7 +183,7 @@ int main()
     unsigned int emissionmap{loadTexture("../Assets/Textures/Emission/matrix.jpg")};
 
     // -------------------------------------------------------------------------------------------
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+    // tell opengl for each sampler to which texture unit it belongs to
     cubeShader.use();
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
@@ -393,7 +397,6 @@ int main()
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
     glDeleteVertexArrays(1, &lightVAO);
@@ -449,8 +452,7 @@ void processInput(GLFWwindow* window)
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
+    // make sure the viewport matches the new window dimensions
     glViewport(0, 0, width, height);
 }
 
@@ -484,7 +486,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-// utility function for loading a 2D texture from file
+// utility function for loading a 2D texture from file (Sourced from LearnOpenGL, created by Joey de Vries)
 // ---------------------------------------------------
 unsigned int loadTexture(char const* path)
 {

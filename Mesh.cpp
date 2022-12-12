@@ -1,3 +1,4 @@
+/* Modified from original source, created by Joey de Vries at learnopengl.com*/
 #include "Mesh.h"
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
