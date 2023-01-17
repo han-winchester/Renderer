@@ -81,7 +81,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="RendererUI.cpp">
+    <ClCompile Include="UI\RendererUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -140,7 +140,7 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Header Files\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="RendererUI.h">
+    <ClInclude Include="UI\RendererUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

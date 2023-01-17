@@ -10,7 +10,8 @@ PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse,
 	m_Specular{specular},
 	m_Constant{constant},
 	m_Linear{linear},
-	m_Quadratic{quadratic}
+	m_Quadratic{quadratic},
+	m_EnablePointLight{true}
 {
 	
 	this->lightPointID = lightPointCount;
@@ -54,6 +55,12 @@ void PointLight::SetQuadratic(float quadratic)
 
 }
 
+void PointLight::EnablePointLight(bool enablePointLight)
+{
+	PointLight::pointLights[this->lightPointID].m_EnablePointLight = enablePointLight;
+}
+
+
 void PointLight::Draw(Shader& shader) const
 {
 	shader.use();
@@ -64,4 +71,6 @@ void PointLight::Draw(Shader& shader) const
 	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].constant"	,m_Constant);
 	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].linear"	,m_Linear);
 	shader.setFloat("pointLights[" + std::to_string(this->lightPointID) + "].quadratic"	,m_Quadratic);
+	shader.setBool(	"pointLightEnabled"													,m_EnablePointLight);
+
 }

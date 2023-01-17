@@ -16,6 +16,7 @@ public:
     void SetConstant(float constant);
     void SetLinear(float linear);
     void SetQuadratic(float quadratic);
+    void EnablePointLight(bool enablePointLight);
     void Draw(Shader& shader) const;
 
 private:
@@ -27,5 +28,6 @@ private:
     float m_Constant;
     float m_Linear;
     float m_Quadratic;
+    bool m_EnablePointLight;
 };
 

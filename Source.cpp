@@ -16,7 +16,6 @@
 #include "Lights/SpotLight.h"
 #include "Lights/DirectionalLight.h"
 #include "Lights/PointLight.h"
-#include "RendererUI.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -24,6 +23,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void UpdateLights(SpotLight flashLight, DirectionalLight directionalLight, GLFWwindow* window);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
+void RenderUI();
 
 // screen settings
 const unsigned int SCR_WIDTH{800};
@@ -36,13 +36,18 @@ float lastY{SCR_HEIGHT / 2.0f};
 bool firstMouse{true};
 bool cursorEnabled{true};
 
+// light settings
+bool renderPointLights{true};
+glm::vec3 directionalLightAmbient{};
+bool enableDirectionalLight{true};
+
 // timing
 float deltaTime{0.0f}; // time between current and last frame
 float lastFrame{0.0f}; // time of last frame
 
 bool isBlackLight{false};
 bool enableFlashLight{true};
-bool enableDirectionalLight{true};
+
 
 
 int main()
@@ -187,6 +192,9 @@ int main()
     square.GetOffset();
     */
 
+
+
+
     unsigned int VBO{}, VAO{};
     
     glGenVertexArrays(1, &VAO);
@@ -279,11 +287,11 @@ int main()
     bool drawBoxes{true};
     bool drawFlashLight{true};
 
+
     // -------------------------------------------------------------------------------------------
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-
         glfwPollEvents();
 
         // Start the Dear ImGui frame
@@ -291,10 +299,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // renders a bigger dockable window with the demo window and a test "settings" window within
-        RenderUI::RenderUI();
-
-
+        RenderUI();
         
 
         auto currentFrame = static_cast<float>(glfwGetTime());
@@ -350,7 +355,7 @@ int main()
         flashlightModel.Draw(modelShader);
 
 
-
+        
          // render boxes
         // -------------------------------------------------------------------------------------------
         // activate boxes shader
@@ -388,22 +393,26 @@ int main()
         p3.SetPosition(pointLightPositions[2]);
         p4.SetPosition(pointLightPositions[3]);
 
-        for(const auto& pointLight : PointLight::pointLights)
-        {
+
+        for(auto& pointLight : PointLight::pointLights)
+        {          
             pointLight.Draw(cubeShader);
         }
-
+  
         // -------------------------------------------------------------------------------------------
         // Render Spot Lights
         for(const auto& spotLight : SpotLight::spotLights)
         {
+
             spotLight.Draw(cubeShader);
         }
 
         // -------------------------------------------------------------------------------------------
         // Render Directional Lights
-        for(const auto& directionalLight : DirectionalLight::directionalLights)
+        directionalLight.SetAmbient(directionalLightAmbient);
+        for(auto& directionalLight : DirectionalLight::directionalLights)
         {
+            directionalLight.EnableDirectionalLight(enableDirectionalLight);
             directionalLight.Draw(cubeShader);
         }
         
@@ -459,17 +468,22 @@ int main()
 
         glBindVertexArray(lightVAO);
 
-        // renders multiple translating white cubes to visualize the point lights
-        for (auto i{0}; i < 4; i++)
+        if(renderPointLights)
         {
-            model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
-            model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
-            lightShader.setMat4("model", model);
+                    // renders multiple translating white cubes to visualize the point lights
+            for (auto i{0}; i < 4; i++)
+            {
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, pointLightPositions[i]);
+                model = glm::scale(model, glm::vec3(0.2f)); // Make it a smaller cube
+                lightShader.setMat4("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
         
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -626,4 +640,120 @@ unsigned int loadTexture(char const* path)
     }
 
     return textureID;
+}
+
+void RenderUI()
+{
+    
+    // renders a bigger dockable window with the demo window and a test "settings" window within
+    static bool opt_fullscreen = false;
+    static bool opt_padding = false;
+
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+    // because it would be confusing to have two docking targets within each others.
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (opt_fullscreen)
+    {
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    }
+    else
+    {
+        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+    }
+
+    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+    // and handle the pass-thru hole, so we ask Begin() to not render a background.
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+    // all active windows docked into it will lose their parent and become undocked.
+    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+    if (!opt_padding)
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+
+    if (!opt_padding)
+        ImGui::PopStyleVar();
+
+    if (opt_fullscreen)
+        ImGui::PopStyleVar(2);
+
+    // Submit the DockSpace
+    ImGuiIO& io = ImGui::GetIO(); 
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+    {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Options"))
+        {
+            // Disabling fullscreen would allow the window to be moved to the front of other windows,
+            // which we can't undo at the moment without finer window depth/z control.
+            ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
+            ImGui::MenuItem("Padding", NULL, &opt_padding);
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Flag: NoSplit",                "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))                 { dockspace_flags ^= ImGuiDockNodeFlags_NoSplit; }
+            if (ImGui::MenuItem("Flag: NoResize",               "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0))                { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
+            if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))  { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode; }
+            if (ImGui::MenuItem("Flag: AutoHideTabBar",         "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))          { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
+            if (ImGui::MenuItem("Flag: PassthruCentralNode",    "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
+            ImGui::Separator();
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+
+    ImGui::Begin("Settings");
+
+    if(ImGui::CollapsingHeader("Light Settings"))
+    {
+        if (ImGui::TreeNode("Point Lights"))
+        {      
+           ImGui::Checkbox("Render All", &renderPointLights);
+           for(auto &pointLight: PointLight::pointLights)
+            {
+                pointLight.EnablePointLight(renderPointLights); 
+            }
+            ImGui::TreePop();
+            ImGui::Separator();
+        }
+        if (ImGui::TreeNode("Directional Lights"))
+        {
+            for(auto &directionalLight: DirectionalLight::directionalLights)
+            {
+                ImGui::Checkbox("Render Directional Lights", &enableDirectionalLight);
+            }
+            ImGui::SliderFloat("Ambient X", &directionalLightAmbient.x, 0, 1);
+            ImGui::SliderFloat("Ambient Y", &directionalLightAmbient.y, 0, 1);
+            ImGui::SliderFloat("Ambient Z", &directionalLightAmbient.z, 0, 1);
+            ImGui::TreePop();
+            ImGui::Separator();
+        } 
+    } 
+
+    ImGui::End();
+            
+    // demo window
+    //ImGui::ShowDemoWindow();
+    ImGui::End();
+
 }

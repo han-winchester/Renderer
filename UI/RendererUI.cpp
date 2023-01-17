@@ -1,12 +1,16 @@
 #include "RendererUI.h"
 
-#include <imgui.h>
+
+
 namespace RenderUI
 {
+
     // renders a bigger dockable window with the demo window and a test "settings" window within
 	void RenderUI()
 	{
 
+               // renders a bigger dockable window with the demo window and a test "settings" window within
+       // RenderUI::RenderUI();
         static bool opt_fullscreen = false;
         static bool opt_padding = false;
 
@@ -83,14 +87,35 @@ namespace RenderUI
             ImGui::EndMenuBar();
         }
 
-        // smaller test "settings" window
         ImGui::Begin("Settings");
-        static float val = 0.0f;
-        ImGui::DragFloat("Value", &val);
+
+        if(ImGui::CollapsingHeader("Light Settings"))
+        {
+            if (ImGui::TreeNode("Point Lights"))
+            {
+                ImGui::Checkbox("Render Point Lights",&renderPointLights);
+                ImGui::TreePop();
+                ImGui::Separator();
+            }
+            if (ImGui::TreeNode("Directional Lights"))
+            {
+                for(auto &directionalLight: DirectionalLight::directionalLights)
+                {
+                    ImGui::Checkbox("Render Directional Lights", &enableDirectionalLight);
+                }
+                ImGui::SliderFloat("DirectionalLight Ambient X", &directionalLightAmbient.x, 0, 1);
+                ImGui::SliderFloat("DirectionalLight Ambient Y", &directionalLightAmbient.y, 0, 1);
+                ImGui::SliderFloat("DirectionalLight Ambient Z", &directionalLightAmbient.z, 0, 1);
+                ImGui::TreePop();
+                ImGui::Separator();
+            } 
+        } 
+        
+        
         ImGui::End();
         
         // demo window
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
         ImGui::End();
 		
