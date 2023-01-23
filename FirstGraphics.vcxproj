@@ -198,6 +198,8 @@
     <None Include="Shaders\LightShader.vert" />
     <None Include="Shaders\ModelShader.frag" />
     <None Include="Shaders\ModelShader.vert" />
+    <None Include="Shaders\framebuffer.vert" />
+    <None Include="Shaders\framebuffer.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

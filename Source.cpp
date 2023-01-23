@@ -48,6 +48,8 @@ float lastFrame{0.0f}; // time of last frame
 bool isBlackLight{false};
 bool enableFlashLight{true};
 
+bool enableIMGUIRender{false};
+
 
 
 int main()
@@ -70,11 +72,11 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
-    //glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    //glfwSetCursorPosCallback(window, mouse_callback);
-    //glfwSetScrollCallback(window, scroll_callback);
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // -------------------------------------------------------------------------------------------
     // Setup Dear ImGui context
@@ -130,6 +132,7 @@ int main()
     Shader cubeShader{"Shaders/CubeShader.vert", "Shaders/CubeShader.frag"};
     Shader lightShader{"Shaders/LightShader.vert", "Shaders/LightShader.frag"};
     Shader modelShader{"Shaders/ModelShader.vert", "Shaders/ModelShader.frag"};
+    Shader screenShader("Shaders/framebuffer.vert","Shaders/framebuffer.frag");
 
     // -------------------------------------------------------------------------------------------
     // load models
@@ -183,7 +186,16 @@ int main()
     -0.5f,  0.5f,  0.5f,    0.0f, 0.0f,     0.0f,  1.0f,  0.0f,
     -0.5f,  0.5f, -0.5f,    0.0f, 1.0f,     0.0f,  1.0f,  0.0f
     };
+    float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+        // positions   // texCoords
+        -1.0f,  1.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f,  0.0f, 0.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
 
+        -1.0f,  1.0f,  0.0f, 1.0f,
+         1.0f, -1.0f,  1.0f, 0.0f,
+         1.0f,  1.0f,  1.0f, 1.0f
+    };
     /*
     Shape square{primitive type = square, textured? = true}
     square.GetVertices();
@@ -192,11 +204,21 @@ int main()
     square.GetOffset();
     */
 
-
+        // screen quad VAO
+    unsigned int quadVAO, quadVBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 
     unsigned int VBO{}, VAO{};
-    
+
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -224,6 +246,32 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+
+    // -------------------------------------------------------------------------------------------
+    // framebuffer configuration
+    // -------------------------
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // create a color attachment texture
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+    // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+    // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     // -------------------------------------------------------------------------------------------
     // load and create a texture 
     unsigned int diffuseMap{loadTexture("../Assets/Textures/Diffuse/container.jpg")};
@@ -238,6 +286,10 @@ int main()
     cubeShader.setInt("material.diffuse", 0);
     cubeShader.setInt("material.specular", 1);
     cubeShader.setInt("material.emission", 2);
+
+    screenShader.use();
+    screenShader.setInt("screenTexture", 2);
+
    
     // -------------------------------------------------------------------------------------------
     // Initialize objects
@@ -300,24 +352,27 @@ int main()
         ImGui::NewFrame();
 
         RenderUI();
-        
+
+
+            
 
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+
+
         // -------------------------------------------------------------------------------------------
         // render
-        ImGui::Render();
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
+        
 
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glViewport(0, 0, display_w, display_h);
+        glEnable(GL_DEPTH_TEST);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
 
@@ -482,8 +537,41 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
+
         
-        
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+        // clear all relevant buffers
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        if(enableIMGUIRender)
+        {
+                    /* RENDER TO IMGUI WINDOW*/
+            ImGui::Begin("Game Window");
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            drawList->AddImage((void*)textureColorbuffer,
+                pos,
+                ImVec2(pos.x + 512, pos.y + 512),
+                ImVec2(0, 1),
+                ImVec2(1, 0));
+            ImGui::End();
+        }
+        else
+        {
+            screenShader.use();
+            glBindVertexArray(quadVAO);
+            glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
+
+
+
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
@@ -501,7 +589,9 @@ int main()
 
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &quadVAO);
     glDeleteVertexArrays(1, &lightVAO);
+    glDeleteBuffers(1, &quadVBO);
     glDeleteBuffers(1, &VBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -723,7 +813,7 @@ void RenderUI()
     }
 
     ImGui::Begin("Settings");
-
+    ImGui::Checkbox("Render To IMGui Window", &enableIMGUIRender);
     if(ImGui::CollapsingHeader("Light Settings"))
     {
         if (ImGui::TreeNode("Point Lights"))
@@ -757,3 +847,4 @@ void RenderUI()
     ImGui::End();
 
 }
+
